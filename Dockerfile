@@ -1,26 +1,18 @@
-# Stage 1: Build the backend WAR using Maven
-FROM maven:3.9.6-eclipse-temurin-17 AS build
+# Stage 1: Build with Maven and Java 21
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 
 WORKDIR /app
-
-# Copy Maven project files
-COPY pom.xml .
-COPY src ./src
-
-# Package the WAR
+COPY . .
 RUN mvn clean package -DskipTests
 
-# Stage 2: Tomcat to run the backend
-FROM tomcat:9-jdk17
+# Stage 2: Run with Tomcat
+FROM tomcat:9.0-jdk21-temurin
 
-# Remove only the old backend app (keep frontend intact)
-RUN rm -rf /usr/local/tomcat/webapps/back1
+# Remove default apps
+RUN rm -rf /usr/local/tomcat/webapps/*
 
-# Copy the new backend WAR
+# Copy backend WAR to Tomcat
 COPY --from=build /app/target/*.war /usr/local/tomcat/webapps/back1.war
 
-# Expose Tomcat port
 EXPOSE 8080
-
-# Start Tomcat
 CMD ["catalina.sh", "run"]
