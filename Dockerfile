@@ -6,7 +6,7 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 # Stage 2: Run with Tomcat
-FROM tomcat:9.0-jdk21-temurin
+FROM tomcat:9.0-jdk17-temurin
 
 # Remove default apps
 RUN rm -rf /usr/local/tomcat/webapps/*
